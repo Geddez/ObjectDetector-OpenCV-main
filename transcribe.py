@@ -128,7 +128,7 @@ def on_error(self, error):
     print(error)
 
 
-def on_close(ws):
+def on_close(ws,k,t):
     """Upon close, print the complete and final transcript."""
     global LAST
     if LAST:
@@ -171,8 +171,7 @@ def get_url():
     # for details on which endpoints are for each region.
     region = config.get('auth', 'region')
     host = REGION_MAP[region]
-    return ("wss://{}/speech-to-text/api/v1/recognize"
-           "?model=en-US_BroadbandModel").format(host)
+    return ("https://api.us-south.speech-to-text.watson.cloud.ibm.com/instances/964771e8-555a-4b9b-a6fc-8b43d669f48e").format(host)
 
 def get_auth():
     config = configparser.RawConfigParser()

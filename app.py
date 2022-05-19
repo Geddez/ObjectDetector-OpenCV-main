@@ -41,26 +41,18 @@ def generate_frames():
             # loop over the indexes we are keeping
                 for i in idxs.flatten():
                     # extract the bounding box coordinates
-                    if classNames[classIds[i]-1].upper()=="CELL PHONE":
+                    
                         (x, y) = (bbox[i][0], bbox[i][1])
                         (w, h) = (bbox[i][2], bbox[i][3])
                         x1,y1=x+w, y+h
                         Focal_length_found=focal_length_finder(KNOWN_DISTANCE,class_dict[classNames[classIds[i]-1]], 20)
                         distance = distance_finder(Focal_length_found, class_dict[classNames[classIds[i]-1]],w)
                         # draw a bounding box rectangle and label on the frame
-                        cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,255), 1)
-                        cv2.line(frame, (x,y), (x+30, y),(255,0,255), 6) #Top Left
-                        cv2.line(frame, (x,y), (x, y+30),(255,0,255), 6)
-
-                        cv2.line(frame, (x1,y), (x1-30, y),(255,0,255), 6) #Top Right
-                        cv2.line(frame, (x1,y), (x1, y+30),(255,0,255), 6)
-
-                        cv2.line(frame, (x,y1), (x+30, y1),(255,0,255), 6) #Bottom Left
-                        cv2.line(frame, (x,y1), (x, y1-30),(255,0,255), 6)
-
-                        cv2.line(frame, (x1,y1), (x1-30, y1),(255,0,255), 6) #Bottom right
-                        cv2.line(frame, (x1,y1), (x1, y1-30),(255,0,255), 6)
-                    ret,buffer=cv2.imencode('.jpg',frame)
+                        cv2.rectangle(frame, (x, y), (x + w, y + h), color=(0, 255, 0), thickness=2)
+                        cv2.putText(frame, classNames[classIds[i]-1].upper(), (x, y - 5),cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0,255,0), 2)
+                        cv2.putText(frame,str(round(confs[i]*100,2)), (x + 100, y-5),cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0,255,0), 2)
+                        cv2.putText(frame, f'Dis: {round(distance,2)} inch', (x+5,y+13), cv2.FONT_HERSHEY_COMPLEX, 0.48, (0,255,0), 2)
+                        ret,buffer=cv2.imencode('.jpg',frame)
                 frame=buffer.tobytes()
                 yield(b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
@@ -68,6 +60,13 @@ def generate_frames():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/homemode')
+def cashmode():
+    return render_template('homemode.html')
+@app.route('/cashmode')
+def homemode():
+    return render_template('cashmode.html')
 
 @app.route('/video')
 def video():
